@@ -4,12 +4,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"fmt"
-	"os"
 	"io"
 	"strconv"
-	"time"
-	"crypto/md5"
-	"html/template"
 	"github.com/gorilla/mux"
 	"mime"
 	"path/filepath"
@@ -88,41 +84,4 @@ func (server *Server) Download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	w.Header().Set("Connection", "close")
 	w.Write(buf.Bytes())
-}
-
-func (server *Server) upload(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method)
-
-	if r.Method == "GET" {
-		crutime := time.Now().Unix()
-		h := md5.New()
-		io.WriteString(h, strconv.FormatInt(crutime, 10))
-		token := fmt.Sprintf("%x", h.Sum(nil))
-
-		t, _ := template.ParseFiles("upload.gtpl")
-		t.Execute(w, token)
-	} else {
-		r.ParseMultipartForm(32 << 20)
-		file, handler, err := r.FormFile("dredsjpg")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer file.Close()
-		fmt.Fprintf(w, "%v", handler.Header)
-		f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil {
-			fmt.Println(err)
-			//return
-		}
-		err = server.storage.Put("marek.jpg",file,100)
-
-		if err != nil {
-			fmt.Print(err)
-			return
-		}
-
-		defer f.Close()
-		io.Copy(f, file)
-	}
 }
