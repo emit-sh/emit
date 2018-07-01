@@ -1,6 +1,6 @@
 package main
 
-import "share/server"
+import "emit/server"
 
 func main() {
 	server, err := server.NewServer()

@@ -1,4 +1,4 @@
-package server
+package storage
 
 import (
 	"github.com/kurin/blazer/b2"
@@ -32,6 +32,11 @@ func (b BackBlazeStorage) Put(path string, reader io.Reader, ttl int) error {
 		return err
 	}
 	return w.Close()
+}
+
+//TODO implement this
+func (b BackBlazeStorage) GetDownloadUrl(path string) (url string, err error) {
+	return path,nil
 }
 
 func (b BackBlazeStorage) Exists(path string) (exists bool, err error) {

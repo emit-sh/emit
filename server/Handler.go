@@ -85,3 +85,33 @@ func (server *Server) Download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "close")
 	w.Write(buf.Bytes())
 }
+
+func (server *Server) DownloadMultiStage(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	token := vars["token"]
+	filename := vars["filename"]
+
+	contentType := mime.TypeByExtension(filepath.Ext(filename))
+
+	reader, err := server.storage.Get(token + "/" + filename)
+
+	if err != nil {
+
+	}
+
+	// TODO: Write this to meta data maybe? kills me now if I have to do this for every request
+	buf := &bytes.Buffer{}
+	contentLength, err := io.Copy(buf, reader)
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Length", strconv.FormatInt(contentLength, 10))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+	w.Header().Set("Connection", "close")
+	w.Write(buf.Bytes())
+}

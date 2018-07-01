@@ -8,13 +8,15 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
+	"emit/server/storage"
 )
 
 type Server struct {
 	Port int
 
 	tlsConfig *tls.Config
-	storage   Storage
+	storage   storage.Storage
+
 }
 
 type OptionFn func(*Server)
@@ -26,12 +28,20 @@ func NewServer() (server *Server, err error) {
 	return
 }
 
-func createBackBlazeStorage() (storage BackBlazeStorage, err error) {
+func createBackBlazeStorage() (s storage.BackBlazeStorage, err error) {
 	b2id := os.Getenv("B2_ACCOUNT_ID")
 	b2key := os.Getenv("B2_ACCOUNT_KEY")
-	storage = BackBlazeStorage{}
+	s = storage.BackBlazeStorage{}
 	ctx := context.Background()
-	storage.Client, err = b2.NewClient(ctx, b2id, b2key)
+	s.Client, err = b2.NewClient(ctx, b2id, b2key)
+	return
+}
+
+func createMailgunEmailClient() (mail MailgunEmailSender) {
+	mgKey := os.Getenv("B2_ACCOUNT_KEY")
+	mgPubKey := os.Getenv("B2_ACCOUNT_PUB_KEY")
+	mgDomain := os.Getenv("MG_DOMAIN")
+	mail = newMailGunSender(mgDomain,mgKey,mgPubKey)
 	return
 }
 
@@ -43,7 +53,8 @@ func (server Server) Start() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", server.FileHandler).Methods("POST")
-	r.HandleFunc("/{token}/{filename}", server.Download).Methods("GET")
+	r.HandleFunc("/{token}/{filename}", server.Download).
+		Methods("GET")
 	http.Handle("/", r)
 
 	srv := &http.Server{
