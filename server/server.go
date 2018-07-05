@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 	"emit/server/storage"
+	"fmt"
 )
 
 type Server struct {
@@ -25,6 +26,10 @@ func NewServer() (server *Server, err error) {
 	//TODO: setup server, maybe just from env variables? cmd line?
 	server = new(Server)
 	server.storage, err = createBackBlazeStorage()
+
+	if err != nil {
+		fmt.Print(err)
+	}
 	return
 }
 
