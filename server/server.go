@@ -57,6 +57,7 @@ func (server Server) SetPort(port int) {
 func (server Server) Start() {
 
 	r := mux.NewRouter()
+	r.HandleFunc("/", server.HomePage).Methods("GET")
 	r.HandleFunc("/", server.FileHandler).Methods("POST")
 	r.HandleFunc("/{token}/{filename}", server.Download).
 		Methods("GET")

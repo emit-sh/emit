@@ -86,6 +86,13 @@ func (server *Server) Download(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 }
 
+func (server *Server) HomePage(w http.ResponseWriter, r *http.Request) {
+
+	w.Write([]byte("<h1> Home </h1>"))
+
+	return
+}
+
 func (server *Server) DownloadMultiStage(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
