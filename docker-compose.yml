@@ -9,7 +9,10 @@ services:
       - nginx
     depends_on:
       - nginx
-    command: ./ emit
+    command: /app/emit
+    environment:
+      - B2_ACCOUNT_ID
+      - B2_ACCOUNT_KEY
 
   nginx:
     build: ./nginx/
