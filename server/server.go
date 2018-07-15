@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
-	"emit/server/storage"
 	"fmt"
+	"github.com/emit-sh/emit/server/storage"
 )
 
 type Server struct {

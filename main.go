@@ -1,7 +1,7 @@
 package main
 
 import (
-	"emit/server"
+	"github.com/emit-sh/emit/server"
 	"fmt"
 )
 
