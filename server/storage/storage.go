@@ -5,6 +5,7 @@ import "io"
 type Storage interface {
 	Get(path string) (reader io.ReadCloser, err error)
 	GetDownloadUrl(path string) (url string, err error)
+	GetUploadUrl(path string) (url string, err error)
 	Put(path string, reader io.Reader, ttl int) error
 	Exists(path string) (exists bool, err error)
 	Type() StorageType
