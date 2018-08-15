@@ -2,31 +2,27 @@ package storage
 
 import (
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/endpoints"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go-v2/service/s3/s3manager"
 	"golang.org/x/oauth2"
 	"io"
 	"os"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 )
 
 type S3Storage struct {
 	Storage
-	uploader *s3manager.Uploader
+	uploader   *s3manager.Uploader
 	downloader *s3manager.Downloader
-	client *s3.S3
-	bucket string
+	client     *s3.S3
+	bucket     string
 }
 
 type TokenSource struct {
 	AccessToken string
 }
 
-func (t* TokenSource) Token() (*oauth2.Token, error) {
+func (t *TokenSource) Token() (*oauth2.Token, error) {
 	token := &oauth2.Token{
 		AccessToken: t.AccessToken,
 	}
@@ -51,20 +47,20 @@ func NewDigitalOceanStorage() *S3Storage {
 	downloader := s3manager.NewDownloaderWithClient(client)
 
 	return &S3Storage{
-		uploader:uploader,
-		client:client,
-		bucket:bucket,
-		downloader:downloader,
+		uploader:   uploader,
+		client:     client,
+		bucket:     bucket,
+		downloader: downloader,
 	}
 }
 
 func (d S3Storage) Put(path string, reader io.Reader, ttl int) error {
 
 	_, err := d.uploader.Upload(&s3manager.UploadInput{
-		ACL: "public-read",
+		ACL:    "public-read",
 		Bucket: aws.String(d.bucket),
-		Key: aws.String(path),
-		Body: reader,
+		Key:    aws.String(path),
+		Body:   reader,
 	})
 
 	if err != nil {
@@ -75,9 +71,9 @@ func (d S3Storage) Put(path string, reader io.Reader, ttl int) error {
 
 func (d S3Storage) Get(path string) (reader io.ReadCloser, err error) {
 	buf := &aws.WriteAtBuffer{}
-	_, err = d.downloader.Download(buf,&s3.GetObjectInput{
-		Bucket:aws.String(d.bucket),
-		Key: aws.String(path),
+	_, err = d.downloader.Download(buf, &s3.GetObjectInput{
+		Bucket: aws.String(d.bucket),
+		Key:    aws.String(path),
 	})
 
 	if err != nil {
@@ -105,9 +101,3 @@ func (d S3Storage) Exists(path string) (exists bool, err error) {
 func (d S3Storage) Type() StorageType {
 	return DigitalOcean
 }
-
-Get(path string) (reader io.ReadCloser, err error)
-GetDownloadUrl(path string) (url string, err error)
-Put(path string, reader io.Reader, ttl int) error
-Exists(path string) (exists bool, err error)
-Type() StorageType
