@@ -17,6 +17,7 @@ type Server struct {
 
 	tlsConfig *tls.Config
 	storage   storage.Storage
+	email     EmailSender
 }
 
 type OptionFn func(*Server)
@@ -25,6 +26,7 @@ func NewServer() (server *Server, err error) {
 	//TODO: setup server, maybe just from env variables? cmd line?
 	server = new(Server)
 	server.storage, err = storage.NewDigitalOceanStorage()
+	server.email = createMailgunEmailClient()
 
 	if err != nil {
 		fmt.Print(err)
@@ -42,10 +44,12 @@ func createBackBlazeStorage() (s storage.BackBlazeStorage, err error) {
 }
 
 func createMailgunEmailClient() (mail MailgunEmailSender) {
+	/*
 	mgKey := os.Getenv("B2_ACCOUNT_KEY")
 	mgPubKey := os.Getenv("B2_ACCOUNT_PUB_KEY")
 	mgDomain := os.Getenv("MG_DOMAIN")
-	mail = newMailGunSender(mgDomain, mgKey, mgPubKey)
+	*/
+	mail = newMailGunSender("mg.emit.sh")
 	return
 }
 

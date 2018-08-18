@@ -49,8 +49,13 @@ func (server *Server) FileHandler(w http.ResponseWriter, r *http.Request) {
 
 			w.Write([]byte(returnStr))
 			if err != nil {
-
+				return
 			}
+			if (len(r.Header.Get("x-emit-email")) > 0) {
+				toAddress := r.Header.Get("x-emit-email")
+				server.email.Send(toAddress,"boo","body")
+			}
+
 		}
 	}
 }

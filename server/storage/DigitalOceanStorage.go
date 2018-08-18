@@ -48,41 +48,6 @@ func NewDigitalOceanStorage() (storage *S3Storage, err error) {
 	newSession := session.New(s3Config)
 	s3Client := s3.New(newSession)
 
-	// Create a new Space
-	/*
-		params := &s3.CreateBucketInput{
-			Bucket: aws.String("my-new-space-with-a-unique-name"),
-		}
-
-		_, err = s3Client.CreateBucket(params)
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-		// List all Spaces in the region
-		spaces, err := s3Client.ListBuckets(nil)
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-
-
-
-		for _, b := range spaces.Buckets {
-			fmt.Printf("%s\n", aws.StringValue(b.Name))
-		}
-
-	*/
-	// Upload a file to the Space
-	/*
-		object := s3.PutObjectInput{
-			Body:   strings.NewReader("The contents of the file"),
-			Bucket: aws.String("my-new-space-with-a-unique-name"),
-			Key:    aws.String("file.ext"),
-		}
-		_, err = s3Client.PutObject(&object)
-	*/
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -100,46 +65,6 @@ func NewDigitalOceanStorage() (storage *S3Storage, err error) {
 		downloader: downloader,
 	}, nil
 
-	/*
-
-		bucket := os.Getenv("SPACES_BUCKET")
-		//region := os.Getenv("SPACES_REGION")
-
-		cfg, err := external.LoadDefaultAWSConfig()
-		if err != nil {
-			return nil,err
-		}
-
-
-		defaultResolver := endpoints.NewDefaultResolver()
-
-		myCustomResolver := func(service, region string) (aws.Endpoint, error) {
-			if service == endpoints.S3ServiceID {
-				return aws.Endpoint{
-					URL:           "https://nyc3.digitaloceanspaces.com",
-					SigningRegion: "us-east-1",
-				}, nil
-			}
-
-			return defaultResolver.ResolveEndpoint(service, region)
-		}
-
-		cfg.EndpointResolver = aws.EndpointResolverFunc(myCustomResolver)
-		cfg.Region = "us-east-1"
-		s3svc := s3.New(cfg)
-
-
-		client := s3svc
-		uploader := s3manager.NewUploaderWithClient(client)
-		downloader := s3manager.NewDownloaderWithClient(client)
-
-		return &S3Storage{
-			uploader:   uploader,
-			client:     client,
-			bucket:     bucket,
-			downloader: downloader,
-		}, nil
-	*/
 }
 
 func (d S3Storage) Put(path string, reader io.Reader, ttl int) error {
@@ -150,9 +75,6 @@ func (d S3Storage) Put(path string, reader io.Reader, ttl int) error {
 		Body:   reader,
 	})
 
-	if err != nil {
-
-	}
 	return err
 }
 
@@ -164,12 +86,10 @@ func (d S3Storage) Get(path string) (reader io.ReadCloser, err error) {
 	})
 
 	if err != nil {
-
+		return
 	}
 
 	reader = ioutil.NopCloser(bytes.NewReader(buf.Bytes()))
-
-	//reader.Read(buf.Bytes())
 	return
 }
 
