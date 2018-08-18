@@ -1,15 +1,15 @@
 package server
 
 import (
-	"crypto/tls"
-	"github.com/kurin/blazer/b2"
-	"os"
 	"context"
-	"github.com/gorilla/mux"
-	"net/http"
-	"time"
+	"crypto/tls"
 	"fmt"
 	"github.com/emit-sh/emit/server/storage"
+	"github.com/gorilla/mux"
+	"github.com/kurin/blazer/b2"
+	"net/http"
+	"os"
+	"time"
 )
 
 type Server struct {
@@ -17,7 +17,6 @@ type Server struct {
 
 	tlsConfig *tls.Config
 	storage   storage.Storage
-
 }
 
 type OptionFn func(*Server)
@@ -25,7 +24,7 @@ type OptionFn func(*Server)
 func NewServer() (server *Server, err error) {
 	//TODO: setup server, maybe just from env variables? cmd line?
 	server = new(Server)
-	server.storage, err = createBackBlazeStorage()
+	server.storage, err = storage.NewDigitalOceanStorage()
 
 	if err != nil {
 		fmt.Print(err)
@@ -46,7 +45,7 @@ func createMailgunEmailClient() (mail MailgunEmailSender) {
 	mgKey := os.Getenv("B2_ACCOUNT_KEY")
 	mgPubKey := os.Getenv("B2_ACCOUNT_PUB_KEY")
 	mgDomain := os.Getenv("MG_DOMAIN")
-	mail = newMailGunSender(mgDomain,mgKey,mgPubKey)
+	mail = newMailGunSender(mgDomain, mgKey, mgPubKey)
 	return
 }
 
@@ -64,8 +63,8 @@ func (server Server) Start() {
 	http.Handle("/", r)
 
 	srv := &http.Server{
-		Handler:      r,
-		Addr:         ":8080",
+		Handler: r,
+		Addr:    ":8080",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
