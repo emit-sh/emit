@@ -53,7 +53,7 @@ func (server *Server) FileHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			if (len(r.Header.Get("x-emit-email")) > 0) {
 				toAddress := r.Header.Get("x-emit-email")
-				server.email.Send(toAddress,"boo","body")
+				server.email.Send(toAddress,"boo","your file can be downloaded from: \n" + returnStr)
 			}
 
 		}

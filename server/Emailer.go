@@ -29,7 +29,13 @@ func newMailGun(domain string, apiKey string, pubApiKey string) mailgun.Mailgun 
 func (emailer MailgunEmailSender) Send(address string, tital string, body string) {
 
 
-	message := emailer.Mail.NewMessage("noreply@emit.sh", "Soneone sent you a file!", body,address)
+	message := emailer.Mail.NewMessage("No Reply <noreply@emit.sh>", "Soneone sent you a file!", body,address)
 
-	emailer.Mail.Send(message);
+	one, two, err := emailer.Mail.Send(message)
+
+	if err != nil || len(one) < 0 || len(two) < 0 {
+
+	}
+
+
 }
