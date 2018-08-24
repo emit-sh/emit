@@ -1,17 +1,17 @@
 package server
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/nu7hatch/gouuid"
+	"io"
+	"mime"
 	"mime/multipart"
 	"net/http"
-	"fmt"
-	"io"
-	"strconv"
-	"github.com/gorilla/mux"
-	"mime"
-	"path/filepath"
-	"bytes"
-	"github.com/nu7hatch/gouuid"
 	"path"
+	"path/filepath"
+	"strconv"
 )
 
 func (server *Server) FileHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,23 +43,30 @@ func (server *Server) FileHandler(w http.ResponseWriter, r *http.Request) {
 			filename := path.Clean(path.Base(hdr.Filename))
 			uid, err := uuid.NewV5(uuid.NamespaceURL, []byte(filename))
 
-			err = server.storage.Put(uid.String() + "/" + filename,infile,100)
+			err = server.storage.Put(uid.String()+"/"+filename, infile, 100)
 
-			returnStr := "http://" + r.Host + "/" + uid.String() + "/" + filename + "\n"
+			var returnStr = ""
+
+			if err == nil {
+				returnStr = "http://" + r.Host + "/" + uid.String() + "/" + filename + "\n"
+			} else {
+				returnStr = err.Error()
+			}
 
 			w.Write([]byte(returnStr))
+
 			if err != nil {
 				return
 			}
-			if (len(r.Header.Get("x-emit-email")) > 0) {
+
+			if len(r.Header.Get("x-emit-email")) > 0 {
 				toAddress := r.Header.Get("x-emit-email")
-				server.email.Send(toAddress,"boo","your file can be downloaded from: \n" + returnStr)
+				server.email.Send(toAddress, "boo", "your file can be downloaded from: \n"+returnStr)
 			}
 
 		}
 	}
 }
-
 
 func (server *Server) Download(w http.ResponseWriter, r *http.Request) {
 
